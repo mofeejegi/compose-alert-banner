@@ -32,3 +32,8 @@ fun AlertBanner(
         )
     }
 }
+
+@Composable
+fun rememberAlertManager(): AlertManager {
+    return LocalAlertManager.current
+}
