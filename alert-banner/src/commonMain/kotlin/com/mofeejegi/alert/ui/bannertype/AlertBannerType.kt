@@ -2,10 +2,10 @@ package com.mofeejegi.alert.ui.bannertype
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.mofeejegi.alert.alert_banner.generated.resources.Res
+import com.mofeejegi.alert.alert_banner.generated.resources.ic_check_circle
+import com.mofeejegi.alert.alert_banner.generated.resources.ic_error
 import com.mofeejegi.alert.ui.theme.AlertTheme
-import compose_alert_banner.alert_banner.generated.resources.Res
-import compose_alert_banner.alert_banner.generated.resources.ic_check_circle
-import compose_alert_banner.alert_banner.generated.resources.ic_error
 import org.jetbrains.compose.resources.DrawableResource
 
 sealed class AlertBannerType {

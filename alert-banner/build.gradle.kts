@@ -10,8 +10,6 @@ plugins {
     alias(libs.plugins.vanniktech.mavenPublish)
 }
 
-//version = "0.1.0"
-
 kotlin {
     jvm()
     androidTarget {
@@ -80,36 +78,39 @@ android {
 
 }
 
+group = "com.mofeejegi.alert"
+version = "0.1.0-alpha01"
+
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
     signAllPublications()
 
-    coordinates(group.toString(), "library", version.toString())
+    coordinates(group.toString(), "alert-banner-compose", version.toString())
 
     pom {
-        name = "My library"
-        description = "A library."
+        name = "Compose Alert Banner"
+        description = "A Compose Multiplatform library used to display basic alert types."
         inceptionYear = "2024"
-        url = "https://github.com/kotlin/multiplatform-library-template/"
+        url = "https://github.com/mofeejegi/compose-alert-banner"
         licenses {
             license {
-                name = "XXX"
-                url = "YYY"
-                distribution = "ZZZ"
+                name = "The Apache License, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         }
         developers {
             developer {
-                id = "XXX"
-                name = "YYY"
-                url = "ZZZ"
+                id = "mofeejegi"
+                name = "Mofe Ejegi"
+                url = "https://mofeejegi.com"
             }
         }
         scm {
-            url = "XXX"
-            connection = "YYY"
-            developerConnection = "ZZZ"
+            url = "https://github.com/mofeejegi/compose-alert-banner"
+            connection = "scm:git:git://github.com/mofeejegi/compose-alert-banner.git"
+            developerConnection = "scm:git:ssh://git@github.com/mofeejegi/compose-alert-banner.git"
         }
     }
 }
