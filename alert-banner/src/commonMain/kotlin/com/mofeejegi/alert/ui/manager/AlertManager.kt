@@ -21,9 +21,9 @@ class AlertManager internal constructor(private val processEvent: (AlertBannerVi
     }
 }
 
-object LocalAlertManager {
+internal object LocalAlertManager {
     private val LocalAlertManager = compositionLocalOf<AlertManager> {
-        error("LocalAlertManager not set")
+        error("AlertManager not set, make sure you wrap your root screen with AlertBanner {}")
     }
 
     val current: AlertManager
