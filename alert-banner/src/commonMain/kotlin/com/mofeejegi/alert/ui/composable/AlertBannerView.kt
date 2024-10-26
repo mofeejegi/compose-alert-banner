@@ -37,6 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.mofeejegi.alert.alert_banner.generated.resources.Res
+import com.mofeejegi.alert.alert_banner.generated.resources.ic_close
 import com.mofeejegi.alert.ui.state.AlertAnimatedIn
 import com.mofeejegi.alert.ui.state.AlertAnimatedOut
 import com.mofeejegi.alert.ui.state.AlertBannerState
@@ -44,8 +46,6 @@ import com.mofeejegi.alert.ui.bannertype.AlertBannerType
 import com.mofeejegi.alert.ui.state.AlertBannerViewEvent
 import com.mofeejegi.alert.ui.state.AlertBannerViewModel
 import com.mofeejegi.alert.ui.state.AlertDismissed
-import compose_alert_banner.alert_banner.generated.resources.Res
-import compose_alert_banner.alert_banner.generated.resources.ic_close
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 
