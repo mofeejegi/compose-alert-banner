@@ -37,7 +37,7 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: 17
         distribution: 'temurin'
     - name: Build with Gradle
       uses: gradle/gradle-build-action@ce999babab2de1c4b649dc15f0ee67e6246c994f
