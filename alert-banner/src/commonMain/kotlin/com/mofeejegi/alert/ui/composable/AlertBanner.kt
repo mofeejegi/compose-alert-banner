@@ -1,5 +1,6 @@
 package com.mofeejegi.alert.ui.composable
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -13,21 +14,22 @@ import com.mofeejegi.alert.ui.theme.AlertTheme
 
 @Composable
 fun AlertBanner(
-    textStyle: TextStyle = AlertTheme.typography.bodySmall,
-    onAlertColor: Color = AlertTheme.colorScheme.white,
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    textStyle: TextStyle? = null,
+    contentColor: Color? = null,
     content: @Composable () -> Unit,
 ) {
-    val alertBannerViewModel = viewModel<AlertBannerViewModel>()
+    val alertBannerViewModel = viewModel { AlertBannerViewModel() }
     val alertManager = remember { AlertManager(alertBannerViewModel::processEvent) }
 
     CompositionLocalProvider(LocalAlertManager provides alertManager) {
         content()
     }
 
-    AlertTheme {
+    AlertTheme(darkTheme = darkTheme) {
         AlertBannerView(
-            textStyle = textStyle,
-            onAlertColor = onAlertColor,
+            textStyle = textStyle ?: AlertTheme.typography.bodySmall,
+            onAlertColor = contentColor ?: AlertTheme.colorScheme.white,
             vm = alertBannerViewModel,
         )
     }

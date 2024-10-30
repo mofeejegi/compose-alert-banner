@@ -1,6 +1,5 @@
 package com.mofeejegi.alert.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
@@ -16,7 +15,7 @@ private val LocalIsDarkMode = compositionLocalOf<Boolean> {
 
 @Composable
 internal fun AlertTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
