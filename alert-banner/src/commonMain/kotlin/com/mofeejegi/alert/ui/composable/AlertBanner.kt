@@ -29,7 +29,7 @@ fun AlertBanner(
     AlertTheme(darkTheme = darkTheme) {
         AlertBannerView(
             textStyle = textStyle ?: AlertTheme.typography.bodySmall,
-            onAlertColor = contentColor ?: AlertTheme.colorScheme.white,
+            onAlertColor = contentColor ?: AlertTheme.colorScheme.tone1,
             vm = alertBannerViewModel,
         )
     }
