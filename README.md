@@ -7,7 +7,7 @@
 [![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21) 
 [![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-alpha03)](https://search.maven.org/artifact/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-alpha03)
 
-A **simple**, **customizable**, and **modern** library for displaying alert banners in your Jetpack Compose applications. Easily integrate and adapt to suit any style or use case—from error notifications to informational messages!
+A **simple**, **customizable**, and **modern** library for displaying alert banners in your Jetpack Compose and Compose Multiplatform applications. Easily integrate and adapt to suit any style or use case—from error notifications to informational messages!
 
 <img src="docs/readme_images/compose%20banner.png" alt="Banner">
 
@@ -41,11 +41,17 @@ Whether you need to show warnings, confirmations, or general notifications, Comp
 
 Here's how it looks:
 
-<img src="docs/readme_images/alert_android.gif"  alt="Android Sample"/>
+
+
+### Samples
+| Android | iOS | Desktop |
+|----------|----------|----------|
+| <img src="docs/readme_images/alert_android.gif" width=250 alt="Android Sample"/> | <img src="docs/readme_images/alert_ios.gif" width=250 alt="iOS Sample"/> | <img src="docs/readme_images/alert_desktop.gif" width=250 alt="Desktop Sample"/> |
+
 
 ## Installation
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.mohamedrejeb.richeditor/richeditor-compose/1.0.0-rc12)](https://search.maven.org/search?q=g:%22com.mohamedrejeb.richeditor%22%20AND%20a:%22richeditor-compose%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-alpha03)](https://search.maven.org/artifact/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-alpha03)
 
 Compose Alert Banner is available as a Gradle dependency on `mavenCentral`. You can add it to your project by including the following in your `build.gradle.kts` file:
 
@@ -75,11 +81,11 @@ fun MyApp() {
 
             Column(modifier = Modifier.fillMaxSize()) {
                 Button(onClick = { alertManager.show("Error", AlertBannerType.Error) }) {
-                    Text("Show Success Alert")
+                    Text("Show Error Alert")
                 }
 
                 Button(onClick = { alertManager.show("Success", AlertBannerType.Success) }) {
-                    Text("Show Error Alert")
+                    Text("Show Success Alert")
                 }
             }
         }
@@ -117,4 +123,3 @@ This project is licensed under the [Apache License 2.0](./LICENSE). See the [LIC
 For questions or suggestions, open an issue or reach out directly:
 
 - **Maintainer:** [mofeejegi](https://github.com/mofeejegi)
-- **Repo:** [github.com/mofeejegi/compose-alert-banner](https://github.com/mofeejegi/compose-alert-banner)  
