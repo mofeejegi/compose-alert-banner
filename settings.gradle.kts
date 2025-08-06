@@ -1,3 +1,4 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
     repositories {
         google()
@@ -17,3 +18,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "compose-alert-banner"
 include(":alert-banner")
+include(":sample:android")

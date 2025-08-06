@@ -1,14 +1,19 @@
 [versions]
-activity-compose = "1.9.3"
-agp = "8.5.2"
-appcompat = "1.7.0"
-kotlin = "2.0.20"
+activity-compose = "1.10.1"
+agp = "8.7.3"
+appcompat = "1.7.1"
+kotlin = "2.1.20"
 android-minSdk = "24"
-android-compileSdk = "34"
-compose-plugin = "1.7.0"
+android-compileSdk = "35"
+android-targetSdk = "35"
+compose-plugin = "1.8.2"
+jetpack-compose = "1.8.3"
 kotlinx-datetime = "0.6.0"
 lifecycle-viewmodel = "2.8.2"
 vanniktech-maven = "0.30.0"
+coreKtx = "1.16.0"
+lifecycleRuntimeKtx = "2.9.2"
+composeBom = "2025.07.00"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -17,13 +22,26 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "a
 lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
+# Libs for the sample project
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "jetpack-compose" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "jetpack-compose" }
 
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 vanniktech-mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven" }

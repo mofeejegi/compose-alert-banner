@@ -1,24 +1,13 @@
 package com.mofeejegi.alert.ui.composable
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
@@ -26,11 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,15 +24,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mofeejegi.alert.alert_banner.generated.resources.Res
 import com.mofeejegi.alert.alert_banner.generated.resources.ic_close
-import com.mofeejegi.alert.ui.state.AlertAnimatedIn
-import com.mofeejegi.alert.ui.state.AlertAnimatedOut
-import com.mofeejegi.alert.ui.state.AlertBannerState
 import com.mofeejegi.alert.ui.bannertype.AlertBannerType
-import com.mofeejegi.alert.ui.state.AlertBannerViewEvent
-import com.mofeejegi.alert.ui.state.AlertBannerViewModel
-import com.mofeejegi.alert.ui.state.AlertDismissed
+import com.mofeejegi.alert.ui.state.*
+import com.mofeejegi.alert.ui.theme.AlertTheme
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun AlertBannerView(
@@ -102,7 +84,7 @@ private fun LazyItemScope.AlertBannerWrapper(
     }
 
     AnimatedVisibility(
-        modifier = Modifier.animateItemPlacement(),
+        modifier = Modifier.animateItem(),
         visible = alertState.visible,
         enter = slideInVertically(
             animationSpec = spring(
@@ -181,6 +163,48 @@ private fun AlertBanner(
                     contentDescription = "Close",
                 )
             }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun PreviewSuccessBanner() {
+    AlertTheme(darkTheme = false) {
+        Box(modifier = Modifier
+            .background(Color.White)
+            .size(400.dp)
+        ) {
+            AlertBanner(
+                id = "success-banner",
+                message = "Success message",
+                type = AlertBannerType.Success,
+                eventProcessor = {},
+                textStyle = TextStyle.Default,
+                onAlertColor = Color.White,
+                onDismiss = {},
+            )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun PreviewErrorBanner() {
+    AlertTheme(darkTheme = false) {
+        Box(modifier = Modifier
+            .background(Color.White)
+            .size(400.dp)
+        ) {
+            AlertBanner(
+                id = "error-banner",
+                message = "Error message",
+                type = AlertBannerType.Error,
+                eventProcessor = {},
+                textStyle = TextStyle.Default,
+                onAlertColor = Color.White,
+                onDismiss = {},
+            )
         }
     }
 }

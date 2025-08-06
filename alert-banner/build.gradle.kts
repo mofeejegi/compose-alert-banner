@@ -33,6 +33,7 @@ kotlin {
                 implementation(compose.material)
                 implementation(compose.material3)
                 implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
 
                 implementation(libs.kotlinx.datetime)
 
@@ -48,7 +49,8 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
-                api(libs.androidx.appcompat)
+                implementation(libs.androidx.appcompat)
+                implementation(libs.androidx.activity.compose)
             }
         }
     }
@@ -75,7 +77,10 @@ android {
     kotlin {
         jvmToolchain(17)
     }
+}
 
+dependencies {
+    debugImplementation(compose.uiTooling)
 }
 
 group = "com.mofeejegi.alert"
