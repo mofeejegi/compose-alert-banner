@@ -2,6 +2,7 @@ package com.mofeejegi.alert.ui.composable
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
@@ -10,7 +11,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -46,7 +46,7 @@ internal fun AlertBannerView(
     Popup(
         alignment = Alignment.TopCenter,
         properties = PopupProperties(
-            focusable = false,              // don't intercept outside clicks
+            focusable = false,
             dismissOnBackPress = false,
             dismissOnClickOutside = false,
         )
@@ -75,7 +75,7 @@ internal fun AlertBannerView(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun LazyItemScope.AlertBannerWrapper(
+private fun AlertBannerWrapper(
     alertState: AlertBannerState,
     textStyle: TextStyle,
     onAlertColor: Color,
@@ -100,19 +100,10 @@ private fun LazyItemScope.AlertBannerWrapper(
         stiffness = Spring.StiffnessLow,
     )
 
-    fun Modifier.animatePlacementOnAdd(isAddition: Boolean): Modifier {
-        return if (isAddition) {
-            this.then(Modifier.animateItem())
-        } else {
-            this
-        }
-    }
-
     AnimatedVisibility(
-        modifier = Modifier.animatePlacementOnAdd(false),
         visible = alertState.visible,
-        enter = slideInVertically(animationSpec = animationSpec()) { -it },
-//        exit = scaleOut(animationSpec = tween(easing = EaseInOut)) + fadeOut(animationSpec = tween(easing = EaseInOut)),
+        enter = expandVertically(animationSpec = animationSpec())
+                + slideInVertically(animationSpec = animationSpec()) { -it },
         exit = shrinkVertically(shrinkTowards = Alignment.CenterVertically, animationSpec = animationSpec())
                 + fadeOut(animationSpec = tween(durationMillis = 200, easing = EaseInOut))
                 + scaleOut(animationSpec = tween(easing = EaseInOut)),
