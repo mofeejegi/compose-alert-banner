@@ -1,10 +1,11 @@
 package com.mofeejegi.alert.ui.composable
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import com.mofeejegi.alert.alert_banner.generated.resources.Res
 import com.mofeejegi.alert.alert_banner.generated.resources.ic_close
 import com.mofeejegi.alert.ui.bannertype.AlertBannerType
@@ -38,25 +41,34 @@ internal fun AlertBannerView(
     onAlertColor: Color,
 ) {
     val viewState by vm.viewState.collectAsState()
+    val alertsToDisplay by derivedStateOf { viewState.orderedAlerts() }
 
-    LazyColumn(
-        Modifier
-            .systemBarsPadding()
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .animateContentSize(),
-        userScrollEnabled = false,
+    Popup(
+        alignment = Alignment.TopCenter,
+        properties = PopupProperties(
+            focusable = false,              // don't intercept outside clicks
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+        )
     ) {
-        items(
-            items = viewState.orderedAlerts(),
-            key = { alertState -> alertState.id },
+        LazyColumn(
+            Modifier
+                .systemBarsPadding()
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            userScrollEnabled = false,
         ) {
-            AlertBannerWrapper(
-                alertState = it,
-                textStyle = textStyle,
-                onAlertColor = onAlertColor,
-                eventProcessor = vm::processEvent,
-            )
+            items(
+                items = alertsToDisplay,
+                key = { alertState -> alertState.id },
+            ) {
+                AlertBannerWrapper(
+                    alertState = it,
+                    textStyle = textStyle,
+                    onAlertColor = onAlertColor,
+                    eventProcessor = vm::processEvent,
+                )
+            }
         }
     }
 }
@@ -83,17 +95,27 @@ private fun LazyItemScope.AlertBannerWrapper(
         }
     }
 
+    fun <T> animationSpec(): FiniteAnimationSpec<T> = spring(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessLow,
+    )
+
+    fun Modifier.animatePlacementOnAdd(isAddition: Boolean): Modifier {
+        return if (isAddition) {
+            this.then(Modifier.animateItem())
+        } else {
+            this
+        }
+    }
+
     AnimatedVisibility(
-        modifier = Modifier.animateItem(),
+        modifier = Modifier.animatePlacementOnAdd(false),
         visible = alertState.visible,
-        enter = slideInVertically(
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioNoBouncy,
-                stiffness = Spring.StiffnessLow,
-            ),
-        ) { -it },
-        exit = scaleOut(animationSpec = tween(easing = EaseInOut))
-                + fadeOut(animationSpec = tween(easing = EaseInOut)),
+        enter = slideInVertically(animationSpec = animationSpec()) { -it },
+//        exit = scaleOut(animationSpec = tween(easing = EaseInOut)) + fadeOut(animationSpec = tween(easing = EaseInOut)),
+        exit = shrinkVertically(shrinkTowards = Alignment.CenterVertically, animationSpec = animationSpec())
+                + fadeOut(animationSpec = tween(durationMillis = 200, easing = EaseInOut))
+                + scaleOut(animationSpec = tween(easing = EaseInOut)),
     ) {
         AlertBanner(
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
@@ -171,9 +193,10 @@ private fun AlertBanner(
 @Preview
 fun PreviewSuccessBanner() {
     AlertTheme(darkTheme = false) {
-        Box(modifier = Modifier
-            .background(Color.White)
-            .size(400.dp)
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .size(400.dp)
         ) {
             AlertBanner(
                 id = "success-banner",
@@ -192,9 +215,10 @@ fun PreviewSuccessBanner() {
 @Preview
 fun PreviewErrorBanner() {
     AlertTheme(darkTheme = false) {
-        Box(modifier = Modifier
-            .background(Color.White)
-            .size(400.dp)
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .size(400.dp)
         ) {
             AlertBanner(
                 id = "error-banner",
