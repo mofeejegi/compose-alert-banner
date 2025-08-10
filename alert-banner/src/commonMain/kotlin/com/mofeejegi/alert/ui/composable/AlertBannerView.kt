@@ -64,31 +64,33 @@ internal fun AlertBannerView(
     val viewState by vm.viewState.collectAsState()
     val alertsToDisplay by derivedStateOf { viewState.orderedAlerts() }
 
-    Popup(
-        alignment = Alignment.TopCenter,
-        properties = PopupProperties(
-            focusable = false,
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false,
-        )
-    ) {
-        LazyColumn(
-            Modifier
-                .systemBarsPadding()
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            userScrollEnabled = false,
+    if (alertsToDisplay.isNotEmpty()) {
+        Popup(
+            alignment = Alignment.TopCenter,
+            properties = PopupProperties(
+                focusable = false,
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false,
+            )
         ) {
-            items(
-                items = alertsToDisplay,
-                key = { alertState -> alertState.id },
+            LazyColumn(
+                Modifier
+                    .systemBarsPadding()
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                userScrollEnabled = false,
             ) {
-                AlertBannerWrapper(
-                    alertState = it,
-                    textStyle = textStyle,
-                    onAlertColor = onAlertColor,
-                    eventProcessor = vm::processEvent,
-                )
+                items(
+                    items = alertsToDisplay,
+                    key = { alertState -> alertState.id },
+                ) {
+                    AlertBannerWrapper(
+                        alertState = it,
+                        textStyle = textStyle,
+                        onAlertColor = onAlertColor,
+                        eventProcessor = vm::processEvent,
+                    )
+                }
             }
         }
     }
