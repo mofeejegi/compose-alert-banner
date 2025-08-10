@@ -84,7 +84,7 @@ dependencies {
 }
 
 group = "com.mofeejegi.alert"
-version = "0.1.0-alpha03"
+version = "0.1.0-beta01"
 
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
