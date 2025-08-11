@@ -1,11 +1,11 @@
 # Compose Alert Banner
 
-[![Kotlin](https://img.shields.io/badge/kotlin-2.0.20-blue.svg?logo=kotlin)](https://kotlinlang.org) 
-[![Compose](https://img.shields.io/badge/compose-1.7.0-blue.svg?logo=jetpackcompose)](https://www.jetbrains.com/lp/compose-multiplatform) 
+[![Kotlin](https://img.shields.io/badge/kotlin-2.1.20-blue.svg?logo=kotlin)](https://kotlinlang.org) 
+[![Compose](https://img.shields.io/badge/compose-1.8.2-blue.svg?logo=jetpackcompose)](https://www.jetbrains.com/lp/compose-multiplatform) 
 [![Author](https://img.shields.io/badge/author-mofeejegi-gray.svg?logo=github)](https://github.com/mofeejegi) 
 [![Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0) 
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=24) 
-[![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-alpha03)](https://search.maven.org/artifact/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-alpha03)
+[![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-beta01)](https://search.maven.org/artifact/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-beta01)
 
 A **simple**, **customizable**, and **modern** library for displaying alert banners in your Jetpack Compose and Compose Multiplatform applications. Easily integrate and adapt to suit any style or use case—from error notifications to informational messages!
 
@@ -60,7 +60,7 @@ Here's how it looks:
 
 ## Installation
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-alpha03)](https://search.maven.org/artifact/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-alpha03)
+[![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-beta01)](https://search.maven.org/artifact/com.mofeejegi.alert/alert-banner-compose-android/0.1.0-alpha03)
 
 Compose Alert Banner is available as a Gradle dependency on `mavenCentral`. You can add it to your project by including the following in your `build.gradle.kts` file:
 
