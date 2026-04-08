@@ -61,7 +61,7 @@ internal fun AlertBannerView(
     onAlertColor: Color,
 ) {
     val viewState by vm.viewState.collectAsState()
-    val alertsToDisplay = viewState.orderedAlerts()
+    val alertsToDisplay = viewState.orderedAlerts
 
     if (alertsToDisplay.isNotEmpty()) {
         Popup(
