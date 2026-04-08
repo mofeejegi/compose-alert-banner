@@ -21,6 +21,11 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    wasmJs {
+        browser()
+        binaries.library()
+    }
     //linuxX64()
 
     sourceSets {
@@ -52,6 +57,7 @@ kotlin {
                 implementation(libs.androidx.activity.compose)
             }
         }
+        val wasmJsMain by getting
     }
 
     @Suppress("OPT_IN_USAGE")
