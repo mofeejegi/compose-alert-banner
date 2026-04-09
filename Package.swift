@@ -15,8 +15,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "AlertBanner",
-            url: "https://github.com/mofeejegi/compose-alert-banner/releases/download/VERSION_PLACEHOLDER/AlertBanner.xcframework.zip",
-            checksum: "CHECKSUM_PLACEHOLDER"
+            url: "https://github.com/mofeejegi/compose-alert-banner/releases/download/v1.1.0-alpha03/AlertBanner.xcframework.zip",
+            checksum: "8dfd522fca455f40179f45255ad6b8167645a512b56da10bfba8d54c7e82b09f"
         )
     ]
 )
