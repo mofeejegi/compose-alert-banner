@@ -2,6 +2,10 @@ name: Publish
 on:
   release:
     types: [released, prereleased]
+
+permissions:
+  contents: write
+
 jobs:
   publish:
     name: Release build and publish
@@ -22,4 +26,27 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY_CONTENTS }}
+      - name: Build XCFramework
+        run: ./gradlew :alert-banner:assembleAlertBannerReleaseXCFramework --no-configuration-cache
+      - name: Zip XCFramework
+        run: |
+          cd alert-banner/build/XCFrameworks/release
+          zip -r "$GITHUB_WORKSPACE/AlertBanner.xcframework.zip" AlertBanner.xcframework
+      - name: Upload XCFramework to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" AlertBanner.xcframework.zip
+      - name: Update Package.swift with checksum
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CHECKSUM=$(swift package compute-checksum AlertBanner.xcframework.zip)
+          TAG="${{ github.event.release.tag_name }}"
+          sed -i '' "s|url: \".*AlertBanner.xcframework.zip\"|url: \"https://github.com/mofeejegi/compose-alert-banner/releases/download/$TAG/AlertBanner.xcframework.zip\"|" Package.swift
+          sed -i '' "s|checksum: \".*\"|checksum: \"$CHECKSUM\"|" Package.swift
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Package.swift
+          git commit -m "Update Package.swift for $TAG"
+          git push origin HEAD:nightly
 

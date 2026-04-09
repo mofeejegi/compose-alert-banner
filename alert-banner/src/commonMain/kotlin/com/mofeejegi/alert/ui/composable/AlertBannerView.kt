@@ -35,6 +35,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -59,6 +61,7 @@ internal fun AlertBannerView(
     vm: AlertBannerViewModel,
     textStyle: TextStyle,
     onAlertColor: Color,
+    onAlertAreaChanged: ((bottom: Float) -> Unit)? = null,
 ) {
     val viewState by vm.viewState.collectAsState()
     val alertsToDisplay = viewState.orderedAlerts
@@ -72,11 +75,21 @@ internal fun AlertBannerView(
                 dismissOnClickOutside = false,
             )
         ) {
+            DisposableEffect(Unit) {
+                onDispose { onAlertAreaChanged?.invoke(0f) }
+            }
+
             LazyColumn(
                 Modifier
                     .systemBarsPadding()
                     .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .onGloballyPositioned { coordinates ->
+                        onAlertAreaChanged?.let { callback ->
+                            val bottom = coordinates.positionInWindow().y + coordinates.size.height
+                            callback(bottom)
+                        }
+                    },
                 userScrollEnabled = false,
             ) {
                 items(

@@ -5,9 +5,9 @@
 [![Author](https://img.shields.io/badge/author-mofeejegi-gray.svg?logo=github)](https://github.com/mofeejegi) 
 [![Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0) 
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=24) 
-[![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose/1.0.0-rc01)](https://central.sonatype.com/artifact/com.mofeejegi.alert/alert-banner-compose/1.0.0-rc01)
+[![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose/1.1.0-alpha03)](https://central.sonatype.com/artifact/com.mofeejegi.alert/alert-banner-compose/1.1.0-alpha03)
 
-A **simple**, **customizable**, and **modern** library for displaying alert banners in your Jetpack Compose and Compose Multiplatform applications. Easily integrate and adapt to suit any style or use case—from error notifications to informational messages!
+A **simple**, **customizable**, and **modern** library for displaying alert banners in your Jetpack Compose, Compose Multiplatform, and native iOS (Swift) applications. Easily integrate and adapt to suit any style or use case—from error notifications to informational messages!
 
 <img src="docs/readme_images/compose%20banner.png" alt="Banner">
 
@@ -17,7 +17,8 @@ A **simple**, **customizable**, and **modern** library for displaying alert bann
 - [Features](#features)
 - [Samples](#samples)
 - [Installation](#installation)
-- [Usage](#usage)
+- [Compose Usage](#compose-usage)
+- [iOS (Swift) Usage](#ios-swift-usage)
 - [Configuration & Customization](#configuration--customization)
 - [Contributing](#contributing)
 - [License](#license)
@@ -60,7 +61,7 @@ Here's how it looks:
 
 ## Installation
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose/1.0.0-rc01)](https://central.sonatype.com/artifact/com.mofeejegi.alert/alert-banner-compose/1.0.0-rc01)
+[![Maven Central](https://img.shields.io/maven-central/v/com.mofeejegi.alert/alert-banner-compose/1.1.0-alpha03)](https://central.sonatype.com/artifact/com.mofeejegi.alert/alert-banner-compose/1.1.0-alpha03)
 
 Compose Alert Banner is available as a Gradle dependency on `mavenCentral`. You can add it to your project by including the following in your `build.gradle.kts` file:
 
@@ -75,7 +76,7 @@ dependencies {
 ```
 Replace `<latest-version>` with the current release version available in the [Releases](https://github.com/mofeejegi/compose-alert-banner/releases) section.
 
-## Usage
+## Compose Usage
 
 Integrating the alert banner into your Compose application is straightforward. Below is a simple example to get you started:
 
@@ -101,6 +102,93 @@ fun MyApp() {
     }
 }
 ```
+
+## iOS (Swift) Usage
+
+Compose Alert Banner can be used directly in native Swift iOS projects via Swift Package Manager — no Compose or Kotlin knowledge required.
+
+### Installation (Swift Package Manager)
+
+In Xcode, go to **File > Add Package Dependencies** and enter:
+
+```
+https://github.com/mofeejegi/compose-alert-banner
+```
+
+Select the latest version from the [Releases](https://github.com/mofeejegi/compose-alert-banner/releases) page.
+
+### SwiftUI / UIKit (Window Overlay)
+
+Call `attach()` once at the root of your app. Then call `showSuccess` or `showError` from anywhere.
+
+```swift
+import AlertBanner
+
+@main
+struct MyApp: App {
+    let alertBanner = AlertBannerIOS.shared
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .onAppear { alertBanner.attach() }
+        }
+    }
+}
+
+struct ContentView: View {
+    let alertBanner = AlertBannerIOS.shared
+
+    var body: some View {
+        VStack {
+            Button("Show Success") {
+                alertBanner.showSuccess(message: "Saved successfully!")
+            }
+            Button("Show Error") {
+                alertBanner.showError(message: "Something went wrong")
+            }
+        }
+    }
+}
+```
+
+### UIKit (Child View Controller)
+
+Call `install(on:)` once on your root view controller. Then call `showSuccess` or `showError` from anywhere.
+
+```swift
+import AlertBanner
+
+class RootViewController: UIViewController {
+    let alertBanner = AlertBannerIOS.shared
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        alertBanner.install(on: self)
+    }
+
+    @objc func onSave() {
+        alertBanner.showSuccess(message: "Saved successfully!")
+    }
+
+    @objc func onError() {
+        alertBanner.showError(message: "Something went wrong")
+    }
+}
+```
+
+### API Reference
+
+| Method                   | Description                                                                                    |
+|--------------------------|------------------------------------------------------------------------------------------------|
+| `AlertBannerIOS.shared`  | Singleton instance - use from anywhere                                                         |
+| `.attach()`              | Creates a window overlay. Call once at the root                                                |
+| `.install(on:)`          | Adds as a child view controller. Call once on the root view controller                         |
+| `.showSuccess(message:)` | Shows a success alert banner                                                                   |
+| `.showError(message:)`   | Shows an error alert banner                                                                    |
+| `.configure(darkTheme:)` | Sets dark/light theme. Call before `attach()` or `install(on:)`. Defaults to system appearance |
+| `.detach()`              | Removes the overlay window                                                                     |
+| `.uninstall()`           | Removes the child view controller                                                              |
 
 ## Configuration & Customization
 
