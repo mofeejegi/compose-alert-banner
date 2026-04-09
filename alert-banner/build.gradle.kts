@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -18,9 +19,14 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+    val xcf = XCFramework("AlertBanner")
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "AlertBanner"
+            isStatic = true
+            xcf.add(this)
+        }
+    }
 
     wasmJs {
         browser()
@@ -89,7 +95,7 @@ dependencies {
 }
 
 group = "com.mofeejegi.alert"
-version = "1.0.0-rc01"
+version = "1.1.0-alpha01"
 
 mavenPublishing {
     publishToMavenCentral()
