@@ -95,7 +95,7 @@ dependencies {
 }
 
 group = "com.mofeejegi.alert"
-version = "1.1.0-alpha03"
+version = "1.1.0-alpha04"
 
 mavenPublishing {
     publishToMavenCentral()
