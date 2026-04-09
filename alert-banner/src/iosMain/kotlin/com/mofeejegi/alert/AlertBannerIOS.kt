@@ -26,6 +26,7 @@ import platform.UIKit.UIView
 import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowLevelNormal
+import platform.UIKit.UISceneActivationStateForegroundActive
 import platform.UIKit.UIWindowScene
 import platform.UIKit.addChildViewController
 import platform.UIKit.didMoveToParentViewController
@@ -71,7 +72,7 @@ object AlertBannerIOS {
     private var darkTheme: Boolean? = null
     private var alertManager: AlertManager? = null
     private var overlayWindow: UIWindow? = null
-    private var installedVC: UIViewController? = null
+    private var installedBannerVC: UIViewController? = null
 
     // Actual bottom Y of the alert area in points, measured from Compose via onGloballyPositioned.
     // When 0, no alerts are showing and all touches pass through.
@@ -135,7 +136,10 @@ object AlertBannerIOS {
         if (overlayWindow != null) return
 
         val scene = UIApplication.sharedApplication.connectedScenes
-            .firstOrNull { it is UIWindowScene } as? UIWindowScene ?: return
+            .firstOrNull {
+                it is UIWindowScene &&
+                    it.activationState == UISceneActivationStateForegroundActive
+            } as? UIWindowScene ?: return
 
         val window = PassthroughWindow(
             windowScene = scene,
@@ -156,6 +160,8 @@ object AlertBannerIOS {
         overlayWindow?.setHidden(true)
         overlayWindow?.rootViewController = null
         overlayWindow = null
+        alertManager = null
+        alertAreaBottom = 0.0
     }
 
     // -- UIKit child view controller --
@@ -167,10 +173,10 @@ object AlertBannerIOS {
      */
     @OptIn(ExperimentalForeignApi::class)
     fun install(on: UIViewController) {
-        if (installedVC != null) return
+        if (installedBannerVC != null) return
 
         val bannerVC = makeViewController()
-        installedVC = bannerVC
+        installedBannerVC = bannerVC
 
         val container = PassthroughView(
             frame = on.view.bounds,
@@ -201,11 +207,13 @@ object AlertBannerIOS {
      * Removes the alert banner from its parent view controller.
      */
     fun uninstall() {
-        installedVC?.let { bannerVC ->
+        installedBannerVC?.let { bannerVC ->
             bannerVC.willMoveToParentViewController(null)
             bannerVC.view.superview?.removeFromSuperview()
             bannerVC.removeFromParentViewController()
-            installedVC = null
+            installedBannerVC = null
+            alertManager = null
+            alertAreaBottom = 0.0
         }
     }
 
