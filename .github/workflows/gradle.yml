@@ -2,9 +2,9 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "nightly" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "nightly" ]
   workflow_call:
 
 permissions:
