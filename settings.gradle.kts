@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "compose-alert-banner"
 include(":alert-banner")
-include(":sample:android")
+include(":sample:shared")

@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +61,7 @@ internal fun AlertBannerView(
     onAlertColor: Color,
 ) {
     val viewState by vm.viewState.collectAsState()
-    val alertsToDisplay by derivedStateOf { viewState.orderedAlerts() }
+    val alertsToDisplay = viewState.orderedAlerts
 
     if (alertsToDisplay.isNotEmpty()) {
         Popup(

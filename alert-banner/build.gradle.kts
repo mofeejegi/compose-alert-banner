@@ -21,6 +21,11 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    wasmJs {
+        browser()
+        binaries.library()
+    }
     //linuxX64()
 
     sourceSets {
@@ -52,6 +57,7 @@ kotlin {
                 implementation(libs.androidx.activity.compose)
             }
         }
+        val wasmJsMain by getting
     }
 
     @Suppress("OPT_IN_USAGE")
@@ -83,7 +89,7 @@ dependencies {
 }
 
 group = "com.mofeejegi.alert"
-version = "0.1.0-beta03"
+version = "1.0.0-rc01"
 
 mavenPublishing {
     publishToMavenCentral()

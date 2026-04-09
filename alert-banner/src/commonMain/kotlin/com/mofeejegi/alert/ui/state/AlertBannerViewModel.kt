@@ -11,33 +11,42 @@ internal class AlertBannerViewModel : ViewModel() {
     val viewState: StateFlow<AlertBannerViewState>
         get() = _viewState.asStateFlow()
 
+    private val alerts: MutableMap<String, AlertBannerState> = mutableMapOf()
+
     fun processEvent(event: AlertBannerViewEvent) {
         when (event) {
             is AlertShown -> {
-                val counter = _viewState.value.alerts.size
+                val counter = alerts.size
                 val compositeId = "${event.id}_${counter}" // Prevent collisions for rapid addition
 
-                val alert = AlertBannerState(compositeId, event.message, event.type)
-                _viewState.value.alerts[compositeId] = alert
+                alerts[compositeId] = AlertBannerState(compositeId, event.message, event.type)
+                sortAlerts()
             }
 
             is AlertAnimatedIn -> {
-                val alert = _viewState.value.alerts[event.id]
-                alert?.let {
-                    _viewState.value.alerts[alert.id] = alert.copy(visible = true)
+                alerts[event.id]?.let {
+                    alerts[event.id] = it.copy(visible = true)
+                    sortAlerts()
                 }
             }
 
             is AlertAnimatedOut -> {
-                val alert = _viewState.value.alerts[event.id]
-                alert?.let {
-                    _viewState.value.alerts[alert.id] = it.copy(visible = false)
+                alerts[event.id]?.let {
+                    alerts[event.id] = it.copy(visible = false)
+                    sortAlerts()
                 }
             }
 
             is AlertDismissed -> {
-                _viewState.value.alerts.remove(event.id)
+                alerts.remove(event.id)
+                sortAlerts()
             }
         }
+    }
+
+    private fun sortAlerts() {
+        _viewState.value = _viewState.value.copy(
+            orderedAlerts = alerts.entries.sortedByDescending { it.key }.map { it.value }
+        )
     }
 }
