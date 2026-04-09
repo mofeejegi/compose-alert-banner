@@ -24,7 +24,6 @@ import platform.UIKit.UIView
 import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowLevelNormal
-import platform.UIKit.UISceneActivationStateForegroundActive
 import platform.UIKit.UIWindowScene
 import platform.UIKit.addChildViewController
 import platform.UIKit.didMoveToParentViewController
@@ -130,10 +129,7 @@ object AlertBannerIOS {
         if (overlayWindow != null) return
 
         val scene = UIApplication.sharedApplication.connectedScenes
-            .firstOrNull {
-                it is UIWindowScene &&
-                    it.activationState == UISceneActivationStateForegroundActive
-            } as? UIWindowScene ?: return
+            .firstOrNull { it is UIWindowScene } as? UIWindowScene ?: return
 
         val window = PassthroughWindow(
             windowScene = scene,
