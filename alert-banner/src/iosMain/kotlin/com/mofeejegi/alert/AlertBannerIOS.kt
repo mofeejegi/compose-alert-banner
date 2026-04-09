@@ -2,8 +2,6 @@ package com.mofeejegi.alert
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeUIViewController
@@ -96,10 +94,6 @@ object AlertBannerIOS {
             val vm = viewModel { AlertBannerViewModel() }
             val manager = remember { AlertManager(vm::processEvent) }
             LaunchedEffect(manager) { alertManager = manager }
-
-            // Reset touch area when all alerts are dismissed
-            val viewState by vm.viewState.collectAsState()
-            if (viewState.orderedAlerts.isEmpty()) alertAreaBottom = 0.0
 
             AlertTheme(darkTheme = darkTheme ?: isSystemInDarkTheme()) {
                 AlertBannerView(

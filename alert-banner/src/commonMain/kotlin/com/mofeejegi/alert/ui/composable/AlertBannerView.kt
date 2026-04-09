@@ -75,6 +75,10 @@ internal fun AlertBannerView(
                 dismissOnClickOutside = false,
             )
         ) {
+            DisposableEffect(Unit) {
+                onDispose { onAlertAreaChanged?.invoke(0f) }
+            }
+
             LazyColumn(
                 Modifier
                     .systemBarsPadding()
