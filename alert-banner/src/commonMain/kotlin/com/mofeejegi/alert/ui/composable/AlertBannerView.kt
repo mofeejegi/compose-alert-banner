@@ -24,9 +24,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +39,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -54,7 +55,6 @@ import com.mofeejegi.alert.ui.state.AlertDismissed
 import com.mofeejegi.alert.ui.theme.AlertTheme
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun AlertBannerView(
@@ -202,10 +202,11 @@ private fun AlertBanner(
             }
 
             IconButton(
-                modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).size(16.dp),
+                modifier = Modifier.align(Alignment.TopEnd).size(32.dp),
                 onClick = onDismiss,
             ) {
                 Icon(
+                    modifier = Modifier.size(16.dp),
                     painter = painterResource(Res.drawable.ic_close),
                     tint = onAlertColor,
                     contentDescription = "Close",

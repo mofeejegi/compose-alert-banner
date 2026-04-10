@@ -38,17 +38,16 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 //put your multiplatform dependencies here
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                implementation(compose.material3)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.resources)
+                implementation(libs.compose.ui.tooling.preview)
 
                 implementation(libs.kotlinx.datetime)
 
                 implementation(libs.lifecycle.viewmodel)
-
             }
         }
         val commonTest by getting {
