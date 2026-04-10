@@ -88,7 +88,10 @@ object AlertBannerIOS {
     @OptIn(ExperimentalComposeUiApi::class)
     private fun makeViewController(): UIViewController {
         val vc = ComposeUIViewController(
-            configure = { opaque = false }
+            configure = {
+                opaque = false
+                enforceStrictPlistSanityCheck = false
+            }
         ) {
             val vm = viewModel { AlertBannerViewModel() }
             val manager = remember { AlertManager(vm::processEvent) }
