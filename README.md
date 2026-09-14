@@ -97,7 +97,7 @@ fun MyApp() {
                     Text("Show Success Alert")
                 }
 
-                // Custom is the one type that takes its own colors
+                // Custom takes its own colors, and its own icon (the info glyph by default, null for none)
                 Button(onClick = {
                     alertManager.show("Custom", AlertBannerType.Custom(containerColor = Color(0xFF_6750A4), contentColor = Color.White))
                 }) {

@@ -170,12 +170,14 @@ private fun AlertBanner(
             )
         ) {
             Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)) {
-                Icon(
-                    modifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
-                    painter = painterResource(type.icon),
-                    tint = onAlertColor,
-                    contentDescription = "",
-                )
+                type.icon?.let { icon ->
+                    Icon(
+                        modifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
+                        painter = painterResource(icon),
+                        tint = onAlertColor,
+                        contentDescription = "",
+                    )
+                }
 
                 Text(
                     modifier = Modifier.padding(start = 8.dp, end = 20.dp)

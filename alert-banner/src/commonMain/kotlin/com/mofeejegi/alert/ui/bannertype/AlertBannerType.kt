@@ -12,7 +12,7 @@ import org.jetbrains.compose.resources.DrawableResource
 sealed class AlertBannerType {
     @get:Composable
     abstract val color: Color
-    abstract val icon: DrawableResource
+    abstract val icon: DrawableResource?
 
     data object Error : AlertBannerType() {
         override val color: Color
@@ -30,15 +30,15 @@ sealed class AlertBannerType {
 
     /**
      * An alert in colors of your choosing: [containerColor] behind it, [contentColor] for
-     * its icon and text. The only type whose colors can be set.
+     * its icon and text. The only type whose colors can be set. [icon] is the info glyph
+     * unless you pass your own, and null shows none.
      */
     data class Custom(
         val containerColor: Color,
         val contentColor: Color,
+        override val icon: DrawableResource? = Res.drawable.ic_info,
     ) : AlertBannerType() {
         override val color: Color
             @Composable get() = containerColor
-
-        override val icon: DrawableResource = Res.drawable.ic_info
     }
 }
