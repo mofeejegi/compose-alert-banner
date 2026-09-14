@@ -7,9 +7,11 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import com.mofeejegi.alert.ui.bannertype.AlertBannerType
 import com.mofeejegi.alert.ui.state.AlertBannerViewEvent
 import com.mofeejegi.alert.ui.state.AlertShown
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class AlertManager internal constructor(private val processEvent: (AlertBannerViewEvent) -> Unit) {
+    @OptIn(ExperimentalTime::class)
     fun show(message: String, type: AlertBannerType) {
         processEvent(
             AlertShown(
