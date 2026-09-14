@@ -135,7 +135,7 @@ private fun AlertBannerWrapper(
             id = alertState.id,
             eventProcessor = eventProcessor,
             textStyle = textStyle,
-            onAlertColor = onAlertColor,
+            onAlertColor = (alertState.type as? AlertBannerType.Custom)?.contentColor ?: onAlertColor,
             message = alertState.message,
             type = alertState.type,
         ) {
@@ -237,6 +237,28 @@ fun PreviewErrorBanner() {
                 id = "error-banner",
                 message = "Error message",
                 type = AlertBannerType.Error,
+                eventProcessor = {},
+                textStyle = TextStyle.Default,
+                onAlertColor = Color.White,
+                onDismiss = {},
+            )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun PreviewCustomBanner() {
+    AlertTheme(darkTheme = false) {
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .size(400.dp)
+        ) {
+            AlertBanner(
+                id = "custom-banner",
+                message = "Custom message",
+                type = AlertBannerType.Custom(containerColor = Color(0xFF_6750A4), contentColor = Color.White),
                 eventProcessor = {},
                 textStyle = TextStyle.Default,
                 onAlertColor = Color.White,

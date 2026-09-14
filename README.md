@@ -96,6 +96,13 @@ fun MyApp() {
                 Button(onClick = { alertManager.show("Success", AlertBannerType.Success) }) {
                     Text("Show Success Alert")
                 }
+
+                // Custom is the one type that takes its own colors
+                Button(onClick = {
+                    alertManager.show("Custom", AlertBannerType.Custom(containerColor = Color(0xFF_6750A4), contentColor = Color.White))
+                }) {
+                    Text("Show Custom Alert")
+                }
             }
         }
     }
