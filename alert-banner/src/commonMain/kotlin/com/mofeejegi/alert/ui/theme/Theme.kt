@@ -13,13 +13,22 @@ private val LocalIsDarkMode = compositionLocalOf<Boolean> {
     error("LocalIsDarkMode CompositionLocal not set")
 }
 
+/**
+ * Banner Colours Composition Local for AlertTheme.
+ */
+private val LocalAlertBannerColors = compositionLocalOf<AlertBannerColors> {
+    error("LocalAlertBannerColors CompositionLocal not set")
+}
+
 @Composable
 internal fun AlertTheme(
     darkTheme: Boolean,
+    colors: AlertBannerColors = AlertBannerDefaults.colors(darkTheme = darkTheme),
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
         LocalIsDarkMode provides darkTheme,
+        LocalAlertBannerColors provides colors,
     ) {
         val colorScheme = when {
             darkTheme -> MaterialDarkColorScheme
@@ -36,6 +45,10 @@ internal object AlertTheme {
     val colorScheme: ColorScheme
         @Composable
         get() = AppColors.getColorScheme(LocalIsDarkMode.current)
+
+    val colors: AlertBannerColors
+        @Composable
+        get() = LocalAlertBannerColors.current
 
     val typography: Typography
         @Composable

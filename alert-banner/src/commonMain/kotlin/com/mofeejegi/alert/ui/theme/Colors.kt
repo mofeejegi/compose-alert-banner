@@ -42,6 +42,7 @@ interface ColorScheme {
     val tertiary: Color
     val danger: Color
     val success: Color
+    val info: Color
 
     val tone0: Color
     val tone1: Color
@@ -74,6 +75,7 @@ internal object AppColors {
         override val tertiary = Color(0xFF_FFD45D)
         override val danger = Color(0xFF_E53E3E)
         override val success = Color(0xFF_179848)
+        override val info = Color(0xFF_2B6CB0)
 
         override val tone0 = white
         override val tone1 = Color(0xFF_F5F5F5)
@@ -96,6 +98,7 @@ internal object AppColors {
         override val tertiary = Color(0xFF_FFB300)
         override val danger = Color(0xFF_FFB3B3)
         override val success = Color(0xFF_B9F5D0)
+        override val info = Color(0xFF_B3D4FF)
 
         override val tone0 = black
         override val tone1 = Color(0xFF_0A0A0A)
