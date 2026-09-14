@@ -36,8 +36,7 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material)
                 implementation(compose.material3)
-                // api: DrawableResource is in the public API (AlertBannerType.icon, Custom's icon)
-                api(compose.components.resources)
+                implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
 
                 implementation(libs.kotlinx.datetime)

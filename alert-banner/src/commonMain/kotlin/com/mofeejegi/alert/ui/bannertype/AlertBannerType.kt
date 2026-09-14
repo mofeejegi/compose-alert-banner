@@ -30,15 +30,17 @@ sealed class AlertBannerType {
 
     /**
      * An alert in colors of your choosing: [containerColor] behind it, [contentColor] for
-     * its icon and text. The only type whose colors can be set. [icon] is the info glyph
-     * unless you pass your own, and null shows none.
+     * its icon and text. The only type whose colors can be set. Its icon is the info glyph,
+     * or none when [showIcon] is false.
      */
     data class Custom(
         val containerColor: Color,
         val contentColor: Color,
-        override val icon: DrawableResource? = Res.drawable.ic_info,
+        val showIcon: Boolean = true,
     ) : AlertBannerType() {
         override val color: Color
             @Composable get() = containerColor
+
+        override val icon: DrawableResource? = if (showIcon) Res.drawable.ic_info else null
     }
 }
