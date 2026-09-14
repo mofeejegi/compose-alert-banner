@@ -58,7 +58,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 internal fun AlertBannerView(
     vm: AlertBannerViewModel,
     textStyle: TextStyle,
-    onAlertColor: Color?,
+    onAlertColor: Color,
 ) {
     val viewState by vm.viewState.collectAsState()
     val alertsToDisplay = viewState.orderedAlerts
@@ -100,7 +100,7 @@ internal fun AlertBannerView(
 private fun AlertBannerWrapper(
     alertState: AlertBannerState,
     textStyle: TextStyle,
-    onAlertColor: Color?,
+    onAlertColor: Color,
     eventProcessor: (AlertBannerViewEvent) -> Unit,
 ) {
     val autoDismissDelay = 5_000L // 5s delay
@@ -152,14 +152,12 @@ private fun AlertBanner(
     textStyle: TextStyle,
     message: String,
     type: AlertBannerType,
-    onAlertColor: Color?,
+    onAlertColor: Color,
     onDismiss: () -> Unit,
 ) {
     DisposableEffect(Unit) {
         onDispose { eventProcessor(AlertDismissed(id)) }
     }
-
-    val contentColor = onAlertColor ?: AlertTheme.colors.contentColor(type)
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -175,7 +173,7 @@ private fun AlertBanner(
                 Icon(
                     modifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
                     painter = painterResource(type.icon),
-                    tint = contentColor,
+                    tint = onAlertColor,
                     contentDescription = "",
                 )
 
@@ -183,7 +181,7 @@ private fun AlertBanner(
                     modifier = Modifier.padding(start = 8.dp, end = 20.dp)
                         .align(Alignment.CenterVertically),
                     text = message,
-                    color = contentColor,
+                    color = onAlertColor,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = textStyle,
@@ -196,7 +194,7 @@ private fun AlertBanner(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_close),
-                    tint = contentColor,
+                    tint = onAlertColor,
                     contentDescription = "Close",
                 )
             }
@@ -242,28 +240,6 @@ fun PreviewErrorBanner() {
                 eventProcessor = {},
                 textStyle = TextStyle.Default,
                 onAlertColor = Color.White,
-                onDismiss = {},
-            )
-        }
-    }
-}
-
-@Composable
-@Preview
-fun PreviewInfoBanner() {
-    AlertTheme(darkTheme = false) {
-        Box(
-            modifier = Modifier
-                .background(Color.White)
-                .size(400.dp)
-        ) {
-            AlertBanner(
-                id = "info-banner",
-                message = "Info message",
-                type = AlertBannerType.Info,
-                eventProcessor = {},
-                textStyle = TextStyle.Default,
-                onAlertColor = null,
                 onDismiss = {},
             )
         }

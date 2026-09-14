@@ -96,10 +96,6 @@ fun MyApp() {
                 Button(onClick = { alertManager.show("Success", AlertBannerType.Success) }) {
                     Text("Show Success Alert")
                 }
-
-                Button(onClick = { alertManager.show("Info", AlertBannerType.Info) }) {
-                    Text("Show Info Alert")
-                }
             }
         }
     }
@@ -114,23 +110,6 @@ Compose Alert Banner offers multiple configuration options:
 - **Icon Support:** Use any [Material Icon](https://fonts.google.com/icons) or your own custom vector to match your design.
 - **Animation:** Configure entrance and exit animations for the banner.
 - **Callbacks:** Implement custom click or dismiss callbacks to run your own business logic.
-
-### Colors
-
-Each alert type has a container color, and a content color for its icon and text. Pass your own through `AlertBannerDefaults.colors`; any you leave out keep the library's defaults:
-
-```kotlin
-AlertBanner(
-    colors = AlertBannerDefaults.colors(
-        infoContainerColor = MaterialTheme.colorScheme.primary,
-        infoContentColor = MaterialTheme.colorScheme.onPrimary,
-    ),
-) {
-    // Your app
-}
-```
-
-Colors read from your theme follow it, so the banners change when the theme does. `contentColor`, when set, still colors the icon and text of every type.
 
 ## Contributing
 

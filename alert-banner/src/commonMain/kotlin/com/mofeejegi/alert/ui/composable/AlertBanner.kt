@@ -10,26 +10,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mofeejegi.alert.ui.manager.AlertManager
 import com.mofeejegi.alert.ui.manager.LocalAlertManager
 import com.mofeejegi.alert.ui.state.AlertBannerViewModel
-import com.mofeejegi.alert.ui.theme.AlertBannerColors
-import com.mofeejegi.alert.ui.theme.AlertBannerDefaults
 import com.mofeejegi.alert.ui.theme.AlertTheme
 
-/**
- * Shows alert banners above [content]. Declare it once at the root of your application;
- * [rememberAlertManager] shows alerts from anywhere inside it.
- *
- * @param darkTheme picks the default colours and the theme the banners are drawn in.
- * @param textStyle the message's style; the theme's `bodySmall` when null.
- * @param contentColor when set, the icon and text colour of every alert type, over [colors].
- * @param colors the container and content colours of each alert type, from
- * [AlertBannerDefaults.colors].
- */
 @Composable
 fun AlertBanner(
     darkTheme: Boolean = isSystemInDarkTheme(),
     textStyle: TextStyle? = null,
     contentColor: Color? = null,
-    colors: AlertBannerColors = AlertBannerDefaults.colors(darkTheme = darkTheme),
     content: @Composable () -> Unit,
 ) {
     val alertBannerViewModel = viewModel { AlertBannerViewModel() }
@@ -39,10 +26,10 @@ fun AlertBanner(
         content()
     }
 
-    AlertTheme(darkTheme = darkTheme, colors = colors) {
+    AlertTheme(darkTheme = darkTheme) {
         AlertBannerView(
             textStyle = textStyle ?: AlertTheme.typography.bodySmall,
-            onAlertColor = contentColor,
+            onAlertColor = contentColor ?: AlertTheme.colorScheme.tone1,
             vm = alertBannerViewModel,
         )
     }
