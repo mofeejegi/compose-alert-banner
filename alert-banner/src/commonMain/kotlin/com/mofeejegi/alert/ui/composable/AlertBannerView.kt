@@ -62,19 +62,16 @@ internal fun AlertBannerView(
     textStyle: TextStyle,
     onAlertColor: Color,
     onAlertAreaChanged: ((bottom: Float) -> Unit)? = null,
+    // The native iOS overlay is already its own window, so it draws the banners directly.
+    // A Popup there would open another UIWindow, and tearing that window down mid-touch
+    // breaks the touch's coordinates, making the app's scroll views jump (issue #15).
+    usePopup: Boolean = true,
 ) {
     val viewState by vm.viewState.collectAsState()
     val alertsToDisplay = viewState.orderedAlerts
 
     if (alertsToDisplay.isNotEmpty()) {
-        Popup(
-            alignment = Alignment.TopCenter,
-            properties = PopupProperties(
-                focusable = false,
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false,
-            )
-        ) {
+        val alerts: @Composable () -> Unit = {
             DisposableEffect(Unit) {
                 onDispose { onAlertAreaChanged?.invoke(0f) }
             }
@@ -104,6 +101,20 @@ internal fun AlertBannerView(
                     )
                 }
             }
+        }
+
+        if (usePopup) {
+            Popup(
+                alignment = Alignment.TopCenter,
+                properties = PopupProperties(
+                    focusable = false,
+                    dismissOnBackPress = false,
+                    dismissOnClickOutside = false,
+                ),
+                content = alerts,
+            )
+        } else {
+            alerts()
         }
     }
 }

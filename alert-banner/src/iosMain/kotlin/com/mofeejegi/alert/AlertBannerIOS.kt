@@ -102,6 +102,7 @@ object AlertBannerIOS {
                     vm = vm,
                     textStyle = AlertTheme.typography.bodySmall,
                     onAlertColor = AlertTheme.colorScheme.tone1,
+                    usePopup = false,
                     onAlertAreaChanged = { bottomPx ->
                         val density = platform.UIKit.UIScreen.mainScreen.scale
                         alertAreaBottom = bottomPx.toDouble() / density
