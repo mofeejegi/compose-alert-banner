@@ -1,7 +1,7 @@
 # Compose Alert Banner
 
-[![Kotlin](https://img.shields.io/badge/kotlin-2.1.20-blue.svg?logo=kotlin)](https://kotlinlang.org) 
-[![Compose](https://img.shields.io/badge/compose-1.8.2-blue.svg?logo=jetpackcompose)](https://www.jetbrains.com/lp/compose-multiplatform) 
+[![Kotlin](https://img.shields.io/badge/kotlin-2.3.20-blue.svg?logo=kotlin)](https://kotlinlang.org) 
+[![Compose](https://img.shields.io/badge/compose-1.10.3-blue.svg?logo=jetpackcompose)](https://www.jetbrains.com/lp/compose-multiplatform) 
 [![Author](https://img.shields.io/badge/author-mofeejegi-gray.svg?logo=github)](https://github.com/mofeejegi) 
 [![Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0) 
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=24) 
@@ -122,11 +122,13 @@ In Xcode, go to **File > Add Package Dependencies** and enter:
 https://github.com/mofeejegi/compose-alert-banner
 ```
 
-Select the latest version from the [Releases](https://github.com/mofeejegi/compose-alert-banner/releases) page.
+Select the latest version from the [Releases](https://github.com/mofeejegi/compose-alert-banner/releases) page. Requires iOS 14 or later.
 
 ### SwiftUI / UIKit (Window Overlay)
 
-Call `attach()` once at the root of your app. Then call `showSuccess` or `showError` from anywhere.
+Call `attach()` once at the root of your app. Then call `showSuccess` or `showError` from anywhere. The overlay only catches touches on the banners themselves; everything else reaches your app as usual.
+
+`attach()` uses your app's active window scene. If your app supports multiple windows, use `attach(scene:)` to choose the scene the banners appear in.
 
 ```swift
 import AlertBanner
@@ -189,7 +191,8 @@ class RootViewController: UIViewController {
 | Method                   | Description                                                                                    |
 |--------------------------|------------------------------------------------------------------------------------------------|
 | `AlertBannerIOS.shared`  | Singleton instance - use from anywhere                                                         |
-| `.attach()`              | Creates a window overlay. Call once at the root                                                |
+| `.attach()`              | Creates a window overlay in the active scene. Call once at the root                            |
+| `.attach(scene:)`        | Creates the overlay in the given `UIWindowScene`, or moves it there if already attached        |
 | `.install(on:)`          | Adds as a child view controller. Call once on the root view controller                         |
 | `.showSuccess(message:)` | Shows a success alert banner                                                                   |
 | `.showError(message:)`   | Shows an error alert banner                                                                    |
