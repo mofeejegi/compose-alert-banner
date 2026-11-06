@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -18,9 +19,14 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+    val xcf = XCFramework("AlertBanner")
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "AlertBanner"
+            isStatic = true
+            xcf.add(this)
+        }
+    }
 
     wasmJs {
         browser()
@@ -32,17 +38,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 //put your multiplatform dependencies here
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                implementation(compose.material3)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
-
-                implementation(libs.kotlinx.datetime)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.resources)
+                implementation(libs.compose.ui.tooling.preview)
 
                 implementation(libs.lifecycle.viewmodel)
-
             }
         }
         val commonTest by getting {
@@ -89,7 +92,7 @@ dependencies {
 }
 
 group = "com.mofeejegi.alert"
-version = "1.0.0-rc03"
+version = "1.0.0-rc04"
 
 mavenPublishing {
     publishToMavenCentral()

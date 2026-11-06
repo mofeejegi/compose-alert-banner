@@ -24,19 +24,24 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -52,26 +57,34 @@ import com.mofeejegi.alert.ui.state.AlertDismissed
 import com.mofeejegi.alert.ui.theme.AlertTheme
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun AlertBannerView(
     vm: AlertBannerViewModel,
     textStyle: TextStyle,
     onAlertColor: Color,
+    // Called with each visible banner's bounds in pixels, relative to the root of this
+    // composition, and with an empty list once all banners are gone. The native iOS overlay
+    // uses it to let touches outside the banners pass through.
+    onBannerBoundsChanged: ((List<Rect>) -> Unit)? = null,
+    // The native iOS overlay is already its own window, so it draws the banners directly.
+    // A Popup there would open another UIWindow, and tearing that window down mid-touch
+    // breaks the touch's coordinates, making the app's scroll views jump (issue #15).
+    usePopup: Boolean = true,
 ) {
     val viewState by vm.viewState.collectAsState()
     val alertsToDisplay = viewState.orderedAlerts
 
     if (alertsToDisplay.isNotEmpty()) {
-        Popup(
-            alignment = Alignment.TopCenter,
-            properties = PopupProperties(
-                focusable = false,
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false,
-            )
-        ) {
+        val boundsTracker = remember(onBannerBoundsChanged) {
+            onBannerBoundsChanged?.let(::BannerBoundsTracker)
+        }
+
+        val alerts: @Composable () -> Unit = {
+            DisposableEffect(boundsTracker) {
+                onDispose { boundsTracker?.clear() }
+            }
+
             LazyColumn(
                 Modifier
                     .systemBarsPadding()
@@ -88,10 +101,45 @@ internal fun AlertBannerView(
                         textStyle = textStyle,
                         onAlertColor = onAlertColor,
                         eventProcessor = vm::processEvent,
+                        boundsTracker = boundsTracker,
                     )
                 }
             }
         }
+
+        if (usePopup) {
+            Popup(
+                alignment = Alignment.TopCenter,
+                properties = PopupProperties(
+                    focusable = false,
+                    dismissOnBackPress = false,
+                    dismissOnClickOutside = false,
+                ),
+                content = alerts,
+            )
+        } else {
+            alerts()
+        }
+    }
+}
+
+/** Keeps the latest on-screen bounds of each banner and reports every change. */
+private class BannerBoundsTracker(private val onChanged: (List<Rect>) -> Unit) {
+    private val bounds = mutableMapOf<String, Rect>()
+
+    fun update(id: String, rect: Rect) {
+        if (bounds[id] == rect) return
+        bounds[id] = rect
+        onChanged(bounds.values.toList())
+    }
+
+    fun remove(id: String) {
+        if (bounds.remove(id) != null) onChanged(bounds.values.toList())
+    }
+
+    fun clear() {
+        bounds.clear()
+        onChanged(emptyList())
     }
 }
 
@@ -102,6 +150,7 @@ private fun AlertBannerWrapper(
     textStyle: TextStyle,
     onAlertColor: Color,
     eventProcessor: (AlertBannerViewEvent) -> Unit,
+    boundsTracker: BannerBoundsTracker?,
 ) {
     val autoDismissDelay = 5_000L // 5s delay
 
@@ -138,6 +187,7 @@ private fun AlertBannerWrapper(
             onAlertColor = (alertState.type as? AlertBannerType.Custom)?.contentColor ?: onAlertColor,
             message = alertState.message,
             type = alertState.type,
+            boundsTracker = boundsTracker,
         ) {
             eventProcessor(AlertAnimatedOut(alertState.id))
         }
@@ -153,10 +203,14 @@ private fun AlertBanner(
     message: String,
     type: AlertBannerType,
     onAlertColor: Color,
+    boundsTracker: BannerBoundsTracker? = null,
     onDismiss: () -> Unit,
 ) {
     DisposableEffect(Unit) {
-        onDispose { eventProcessor(AlertDismissed(id)) }
+        onDispose {
+            eventProcessor(AlertDismissed(id))
+            boundsTracker?.remove(id)
+        }
     }
 
     Box(
@@ -164,10 +218,19 @@ private fun AlertBanner(
         contentAlignment = Alignment.Center,
     ) {
         Box(
-            modifier = Modifier.widthIn(max = 600.dp).background(
-                color = type.color,
-                shape = RoundedCornerShape(12.dp),
-            )
+            modifier = Modifier
+                .widthIn(max = 600.dp)
+                .then(
+                    if (boundsTracker != null) {
+                        Modifier.onGloballyPositioned { boundsTracker.update(id, it.boundsInRoot()) }
+                    } else {
+                        Modifier
+                    }
+                )
+                .background(
+                    color = type.color,
+                    shape = RoundedCornerShape(12.dp),
+                )
         ) {
             Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)) {
                 type.icon?.let { icon ->
@@ -191,10 +254,11 @@ private fun AlertBanner(
             }
 
             IconButton(
-                modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).size(16.dp),
+                modifier = Modifier.align(Alignment.TopEnd).size(32.dp),
                 onClick = onDismiss,
             ) {
                 Icon(
+                    modifier = Modifier.size(16.dp),
                     painter = painterResource(Res.drawable.ic_close),
                     tint = onAlertColor,
                     contentDescription = "Close",
