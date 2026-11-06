@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +49,22 @@ fun SampleApp() {
                     modifier = Modifier.padding(8.dp),
                 ) {
                     Text(text = "Show Error Alert")
+                }
+
+                val customType = AlertBannerType.Custom(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                )
+                Button(
+                    onClick = {
+                        alertManager.show(
+                            message = "This is a custom message",
+                            type = customType,
+                        )
+                    },
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    Text(text = "Show Custom Alert")
                 }
             }
         }
