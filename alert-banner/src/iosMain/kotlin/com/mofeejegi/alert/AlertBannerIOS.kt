@@ -49,6 +49,7 @@ import platform.UIKit.willMoveToParentViewController
  * // Show alerts from anywhere
  * alertBanner.showSuccess(message: "Saved!")
  * alertBanner.showError(message: "Something went wrong")
+ * alertBanner.showCustom(message: "Synced", containerColor: .systemPurple, contentColor: .white)
  * ```
  *
  * ## UIKit (child view controller)
@@ -134,6 +135,28 @@ object AlertBannerIOS {
 
     fun showError(message: String) {
         alertManager?.show(message, AlertBannerType.Error)
+    }
+
+    /**
+     * Shows an alert in colors of your choosing: [containerColor] behind it and
+     * [contentColor] for its icon and text. It shows the info icon.
+     */
+    fun showCustom(message: String, containerColor: UIColor, contentColor: UIColor) {
+        showCustom(message, containerColor, contentColor, showIcon = true)
+    }
+
+    /**
+     * Like [showCustom], with [showIcon] set to false to show the alert without an icon.
+     */
+    fun showCustom(message: String, containerColor: UIColor, contentColor: UIColor, showIcon: Boolean) {
+        alertManager?.show(
+            message,
+            AlertBannerType.Custom(
+                containerColor = containerColor.toComposeColor(),
+                contentColor = contentColor.toComposeColor(),
+                showIcon = showIcon,
+            ),
+        )
     }
 
     // -- Window overlay (works with SwiftUI and UIKit) --
