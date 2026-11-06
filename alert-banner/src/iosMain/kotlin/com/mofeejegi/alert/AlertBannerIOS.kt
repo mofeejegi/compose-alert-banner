@@ -1,11 +1,10 @@
 package com.mofeejegi.alert
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.window.ComposeUIViewController
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mofeejegi.alert.ui.bannertype.AlertBannerType
 import com.mofeejegi.alert.ui.composable.AlertBannerView
 import com.mofeejegi.alert.ui.manager.AlertManager
@@ -20,6 +19,9 @@ import platform.CoreGraphics.CGRect
 import platform.UIKit.UIApplication
 import platform.UIKit.UIColor
 import platform.UIKit.UIEvent
+import platform.UIKit.UISceneActivationStateForegroundActive
+import platform.UIKit.UISceneActivationStateForegroundInactive
+import platform.UIKit.UIScreen
 import platform.UIKit.UIView
 import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
@@ -40,7 +42,8 @@ import platform.UIKit.willMoveToParentViewController
  * // Optionally configure before attaching
  * alertBanner.configure(darkTheme: true)
  *
- * // Attach once at the root of your app
+ * // Attach once at the root of your app. In a multi-window app, pass the scene
+ * // the banners belong to with attach(scene:).
  * alertBanner.attach()
  *
  * // Show alerts from anywhere
@@ -71,9 +74,17 @@ object AlertBannerIOS {
     private var overlayWindow: UIWindow? = null
     private var installedBannerVC: UIViewController? = null
 
-    // Actual bottom Y of the alert area in points, measured from Compose via onGloballyPositioned.
-    // When 0, no alerts are showing and all touches pass through.
-    private var alertAreaBottom = 0.0
+    // Bounds of each visible banner, in points, relative to the overlay's Compose view. That view
+    // fills the PassthroughWindow or PassthroughView exactly, so hitTest points can be compared
+    // directly. Touches outside the banners pass through to the app. Empty when none are showing.
+    private var bannerRects: List<Rect> = emptyList()
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun isBannerAt(point: CValue<CGPoint>): Boolean {
+        val (x, y) = point.useContents { x to y }
+        val offset = Offset(x.toFloat(), y.toFloat())
+        return bannerRects.any { it.contains(offset) }
+    }
 
     /**
      * Configures the alert banner theme. Call before [attach] or [install].
@@ -87,25 +98,28 @@ object AlertBannerIOS {
 
     @OptIn(ExperimentalComposeUiApi::class)
     private fun makeViewController(): UIViewController {
+        // Created here rather than inside the composition, so alerts shown right after
+        // attach() or install() are kept and appear once the overlay first draws.
+        val vm = AlertBannerViewModel()
+        alertManager = AlertManager(vm::processEvent)
+
         val vc = ComposeUIViewController(
             configure = {
                 opaque = false
                 enforceStrictPlistSanityCheck = false
             }
         ) {
-            val vm = viewModel { AlertBannerViewModel() }
-            val manager = remember { AlertManager(vm::processEvent) }
-            LaunchedEffect(manager) { alertManager = manager }
-
             AlertTheme(darkTheme = darkTheme ?: isSystemInDarkTheme()) {
                 AlertBannerView(
                     vm = vm,
                     textStyle = AlertTheme.typography.bodySmall,
                     onAlertColor = AlertTheme.colorScheme.tone1,
                     usePopup = false,
-                    onAlertAreaChanged = { bottomPx ->
-                        val density = platform.UIKit.UIScreen.mainScreen.scale
-                        alertAreaBottom = bottomPx.toDouble() / density
+                    onBannerBoundsChanged = { rectsPx ->
+                        val scale = UIScreen.mainScreen.scale.toFloat()
+                        bannerRects = rectsPx.map { rect ->
+                            Rect(rect.left / scale, rect.top / scale, rect.right / scale, rect.bottom / scale)
+                        }
                     },
                 )
             }
@@ -128,16 +142,29 @@ object AlertBannerIOS {
      * Creates a transparent overlay window above the app's content and attaches
      * the alert banner to it. Works with both SwiftUI and UIKit.
      * Call once at the root of your app.
+     *
+     * Uses the app's active foreground scene. In a multi-window app, use
+     * [attach] with a scene to choose which one shows the banners.
      */
     fun attach() {
-        if (overlayWindow != null) return
+        val scene = activeWindowScene() ?: return
+        attach(scene)
+    }
 
-        val scene = UIApplication.sharedApplication.connectedScenes
-            .firstOrNull { it is UIWindowScene } as? UIWindowScene ?: return
+    /**
+     * Like [attach], but shows the banners in the given [scene]. Calling it again
+     * with a different scene moves the banners there.
+     */
+    @OptIn(ExperimentalForeignApi::class)
+    fun attach(scene: UIWindowScene) {
+        overlayWindow?.let { window ->
+            if (window.windowScene != scene) window.windowScene = scene
+            return
+        }
 
         val window = PassthroughWindow(
             windowScene = scene,
-            alertAreaHeight = { alertAreaBottom },
+            isBannerAt = ::isBannerAt,
         )
         window.windowLevel = UIWindowLevelNormal + 1
         window.rootViewController = makeViewController()
@@ -155,7 +182,14 @@ object AlertBannerIOS {
         overlayWindow?.rootViewController = null
         overlayWindow = null
         alertManager = null
-        alertAreaBottom = 0.0
+        bannerRects = emptyList()
+    }
+
+    private fun activeWindowScene(): UIWindowScene? {
+        val scenes = UIApplication.sharedApplication.connectedScenes.filterIsInstance<UIWindowScene>()
+        return scenes.firstOrNull { it.activationState == UISceneActivationStateForegroundActive }
+            ?: scenes.firstOrNull { it.activationState == UISceneActivationStateForegroundInactive }
+            ?: scenes.firstOrNull()
     }
 
     // -- UIKit child view controller --
@@ -174,7 +208,7 @@ object AlertBannerIOS {
 
         val container = PassthroughView(
             frame = on.view.bounds,
-            alertAreaHeight = { alertAreaBottom },
+            isBannerAt = ::isBannerAt,
         )
         container.setBackgroundColor(UIColor.clearColor)
 
@@ -207,50 +241,40 @@ object AlertBannerIOS {
             bannerVC.removeFromParentViewController()
             installedBannerVC = null
             alertManager = null
-            alertAreaBottom = 0.0
+            bannerRects = emptyList()
         }
     }
 
 }
 
 /**
- * A UIWindow that only intercepts touches in the alert banner area at the top
- * of the screen. All other touches pass through to the app below.
+ * A UIWindow that only intercepts touches on a visible alert banner.
+ * All other touches pass through to the app below.
  */
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 private class PassthroughWindow(
     windowScene: UIWindowScene,
-    private val alertAreaHeight: () -> Double,
+    private val isBannerAt: (CValue<CGPoint>) -> Boolean,
 ) : UIWindow(windowScene = windowScene) {
 
     override fun hitTest(point: CValue<CGPoint>, withEvent: UIEvent?): UIView? {
-        val height = alertAreaHeight()
-        if (height <= 0.0) return null
-
-        val y = point.useContents { y }
-        if (y > height) return null
-
+        if (!isBannerAt(point)) return null
         return super.hitTest(point, withEvent)
     }
 }
 
 /**
- * A UIView that only intercepts touches in the alert banner area at the top.
+ * A UIView that only intercepts touches on a visible alert banner.
  * All other touches pass through to views below.
  */
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 private class PassthroughView(
     frame: CValue<CGRect>,
-    private val alertAreaHeight: () -> Double,
+    private val isBannerAt: (CValue<CGPoint>) -> Boolean,
 ) : UIView(frame = frame) {
 
     override fun hitTest(point: CValue<CGPoint>, withEvent: UIEvent?): UIView? {
-        val height = alertAreaHeight()
-        if (height <= 0.0) return null
-
-        val y = point.useContents { y }
-        if (y > height) return null
-
+        if (!isBannerAt(point)) return null
         return super.hitTest(point, withEvent)
     }
 }

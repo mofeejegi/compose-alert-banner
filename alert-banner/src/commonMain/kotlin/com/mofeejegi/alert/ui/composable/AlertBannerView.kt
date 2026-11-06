@@ -32,11 +32,13 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,7 +63,10 @@ internal fun AlertBannerView(
     vm: AlertBannerViewModel,
     textStyle: TextStyle,
     onAlertColor: Color,
-    onAlertAreaChanged: ((bottom: Float) -> Unit)? = null,
+    // Called with each visible banner's bounds in pixels, relative to the root of this
+    // composition, and with an empty list once all banners are gone. The native iOS overlay
+    // uses it to let touches outside the banners pass through.
+    onBannerBoundsChanged: ((List<Rect>) -> Unit)? = null,
     // The native iOS overlay is already its own window, so it draws the banners directly.
     // A Popup there would open another UIWindow, and tearing that window down mid-touch
     // breaks the touch's coordinates, making the app's scroll views jump (issue #15).
@@ -71,22 +76,20 @@ internal fun AlertBannerView(
     val alertsToDisplay = viewState.orderedAlerts
 
     if (alertsToDisplay.isNotEmpty()) {
+        val boundsTracker = remember(onBannerBoundsChanged) {
+            onBannerBoundsChanged?.let(::BannerBoundsTracker)
+        }
+
         val alerts: @Composable () -> Unit = {
-            DisposableEffect(Unit) {
-                onDispose { onAlertAreaChanged?.invoke(0f) }
+            DisposableEffect(boundsTracker) {
+                onDispose { boundsTracker?.clear() }
             }
 
             LazyColumn(
                 Modifier
                     .systemBarsPadding()
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                    .onGloballyPositioned { coordinates ->
-                        onAlertAreaChanged?.let { callback ->
-                            val bottom = coordinates.positionInWindow().y + coordinates.size.height
-                            callback(bottom)
-                        }
-                    },
+                    .wrapContentHeight(),
                 userScrollEnabled = false,
             ) {
                 items(
@@ -98,6 +101,7 @@ internal fun AlertBannerView(
                         textStyle = textStyle,
                         onAlertColor = onAlertColor,
                         eventProcessor = vm::processEvent,
+                        boundsTracker = boundsTracker,
                     )
                 }
             }
@@ -119,6 +123,26 @@ internal fun AlertBannerView(
     }
 }
 
+/** Keeps the latest on-screen bounds of each banner and reports every change. */
+private class BannerBoundsTracker(private val onChanged: (List<Rect>) -> Unit) {
+    private val bounds = mutableMapOf<String, Rect>()
+
+    fun update(id: String, rect: Rect) {
+        if (bounds[id] == rect) return
+        bounds[id] = rect
+        onChanged(bounds.values.toList())
+    }
+
+    fun remove(id: String) {
+        if (bounds.remove(id) != null) onChanged(bounds.values.toList())
+    }
+
+    fun clear() {
+        bounds.clear()
+        onChanged(emptyList())
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AlertBannerWrapper(
@@ -126,6 +150,7 @@ private fun AlertBannerWrapper(
     textStyle: TextStyle,
     onAlertColor: Color,
     eventProcessor: (AlertBannerViewEvent) -> Unit,
+    boundsTracker: BannerBoundsTracker?,
 ) {
     val autoDismissDelay = 5_000L // 5s delay
 
@@ -162,6 +187,7 @@ private fun AlertBannerWrapper(
             onAlertColor = (alertState.type as? AlertBannerType.Custom)?.contentColor ?: onAlertColor,
             message = alertState.message,
             type = alertState.type,
+            boundsTracker = boundsTracker,
         ) {
             eventProcessor(AlertAnimatedOut(alertState.id))
         }
@@ -177,10 +203,14 @@ private fun AlertBanner(
     message: String,
     type: AlertBannerType,
     onAlertColor: Color,
+    boundsTracker: BannerBoundsTracker? = null,
     onDismiss: () -> Unit,
 ) {
     DisposableEffect(Unit) {
-        onDispose { eventProcessor(AlertDismissed(id)) }
+        onDispose {
+            eventProcessor(AlertDismissed(id))
+            boundsTracker?.remove(id)
+        }
     }
 
     Box(
@@ -188,10 +218,19 @@ private fun AlertBanner(
         contentAlignment = Alignment.Center,
     ) {
         Box(
-            modifier = Modifier.widthIn(max = 600.dp).background(
-                color = type.color,
-                shape = RoundedCornerShape(12.dp),
-            )
+            modifier = Modifier
+                .widthIn(max = 600.dp)
+                .then(
+                    if (boundsTracker != null) {
+                        Modifier.onGloballyPositioned { boundsTracker.update(id, it.boundsInRoot()) }
+                    } else {
+                        Modifier
+                    }
+                )
+                .background(
+                    color = type.color,
+                    shape = RoundedCornerShape(12.dp),
+                )
         ) {
             Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)) {
                 type.icon?.let { icon ->
