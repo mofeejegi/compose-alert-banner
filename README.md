@@ -126,7 +126,7 @@ Select the latest version from the [Releases](https://github.com/mofeejegi/compo
 
 ### SwiftUI / UIKit (Window Overlay)
 
-Call `attach()` once at the root of your app. Then call `showSuccess` or `showError` from anywhere. The overlay only catches touches on the banners themselves; everything else reaches your app as usual.
+Call `attach()` once at the root of your app. Then call `showSuccess`, `showError` or `showCustom` from anywhere. The overlay only catches touches on the banners themselves; everything else reaches your app as usual.
 
 `attach()` uses your app's active window scene. If your app supports multiple windows, use `attach(scene:)` to choose the scene the banners appear in.
 
@@ -156,6 +156,9 @@ struct ContentView: View {
             Button("Show Error") {
                 alertBanner.showError(message: "Something went wrong")
             }
+            Button("Show Custom") {
+                alertBanner.showCustom(message: "Synced", containerColor: .systemPurple, contentColor: .white)
+            }
         }
     }
 }
@@ -163,7 +166,7 @@ struct ContentView: View {
 
 ### UIKit (Child View Controller)
 
-Call `install(on:)` once on your root view controller. Then call `showSuccess` or `showError` from anywhere.
+Call `install(on:)` once on your root view controller. Then call `showSuccess`, `showError` or `showCustom` from anywhere.
 
 ```swift
 import AlertBanner
@@ -196,6 +199,8 @@ class RootViewController: UIViewController {
 | `.install(on:)`          | Adds as a child view controller. Call once on the root view controller                         |
 | `.showSuccess(message:)` | Shows a success alert banner                                                                   |
 | `.showError(message:)`   | Shows an error alert banner                                                                    |
+| `.showCustom(message:containerColor:contentColor:)` | Shows an alert in your own colors: `containerColor` behind it, `contentColor` for its icon and text |
+| `.showCustom(message:containerColor:contentColor:showIcon:)` | Same, with `showIcon: false` to leave out the icon |
 | `.configure(darkTheme:)` | Sets dark/light theme. Call before `attach()` or `install(on:)`. Defaults to system appearance |
 | `.detach()`              | Removes the overlay window                                                                     |
 | `.uninstall()`           | Removes the child view controller                                                              |
