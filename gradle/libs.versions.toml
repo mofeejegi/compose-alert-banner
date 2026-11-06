@@ -8,7 +8,6 @@ android-compileSdk = "36"
 android-targetSdk = "36"
 compose-material3 = "1.9.0"
 compose-plugin = "1.10.3"
-kotlinx-datetime = "0.7.1"
 lifecycle-viewmodel = "2.10.0"
 vanniktech-maven = "0.34.0"
 
@@ -26,7 +25,6 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "a
 lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 
 [plugins]

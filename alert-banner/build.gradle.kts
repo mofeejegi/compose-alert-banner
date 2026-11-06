@@ -45,8 +45,6 @@ kotlin {
                 implementation(libs.compose.resources)
                 implementation(libs.compose.ui.tooling.preview)
 
-                implementation(libs.kotlinx.datetime)
-
                 implementation(libs.lifecycle.viewmodel)
             }
         }
